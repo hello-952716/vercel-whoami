@@ -1,10 +1,10 @@
-import { Hono } from 'hono';
-import { handle } from 'hono/vercel';
+import { Hono } from "hono";
+import { handle } from "hono/vercel";
 import { cors } from "hono/cors";
 
 export const config = {
-  runtime: 'edge'
-}
+  runtime: "edge",
+};
 
 const app = new Hono();
 
@@ -33,10 +33,11 @@ app.all("*", async (c) => {
     url,
     method,
     body,
+    clientIP: c.req.header("x-real-ip"),
     headers,
   };
 
   return c.json(responseBody, 200);
 });
 
-export default handle(app)
+export default handle(app);
