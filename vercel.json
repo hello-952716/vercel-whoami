@@ -6,6 +6,6 @@
     }
   ],
   "redirects": [
-    { "source": "/", "destination": "/", "permanent": false }
+    { "source": "/", "destination": "/api", "permanent": false }
   ]
 }
