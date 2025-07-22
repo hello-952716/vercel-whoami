@@ -1,16 +1,42 @@
-import { Hono } from 'hono'
-import { handle } from 'hono/vercel'
+import { Hono } from 'hono';
+import { handle } from 'hono/vercel';
+import { cors } from "hono/cors";
 
-const app = new Hono().basePath('/api')
+export const config = {
+  runtime: 'edge'
+}
 
-app.get('/', (c) => {
-  return c.json({ message: "Congrats! You've deployed Hono to Vercel" })
-})
+const app = new Hono();
 
-const handler = handle(app);
+// 配置 CORS 中间件
+app.use(
+  "*",
+  cors({
+    origin: "*",
+    allowMethods: ["GET", "HEAD", "POST", "OPTIONS"],
+    maxAge: 86400,
+  })
+);
 
-export const GET = handler;
-export const POST = handler;
-export const PATCH = handler;
-export const PUT = handler;
-export const OPTIONS = handler;
+// 处理所有请求的路由
+app.all("*", async (c) => {
+  const { method, url } = c.req;
+  // 修复：通过 raw 获取原始请求对象的 headers
+  const headers = Object.fromEntries(c.req.raw.headers.entries());
+
+  let body = null;
+  if (method === "POST") {
+    body = await c.req.json().catch(() => null);
+  }
+
+  const responseBody = {
+    url,
+    method,
+    body,
+    headers,
+  };
+
+  return c.json(responseBody, 200);
+});
+
+export default handle(app)
