@@ -6,7 +6,7 @@ export const config = {
   runtime: "edge",
 };
 
-const app = new Hono();
+const app = new Hono().basePath('/api');
 
 // 配置 CORS 中间件
 app.use(
